@@ -1,0 +1,6 @@
+name,sku,type,price,stock,category,description,status,image
+Demo Cotton T-Shirt,AD-DEMO-001,simple,25,20,Clothing,Soft cotton T-shirt for everyday wear.,draft,
+Demo Wireless Mouse,AD-DEMO-002,simple,18.5,15,Electronics,Compact wireless mouse with USB receiver.,draft,
+Demo Ceramic Mug,AD-DEMO-003,simple,12,30,Home,"Ceramic mug, 350 ml capacity.",draft,
+Demo Canvas Tote,AD-DEMO-004,simple,15,12,Accessories,Reusable canvas tote bag.,draft,
+Demo Notebook,AD-DEMO-005,simple,8,40,Stationery,A5 notebook with lined pages.,draft,

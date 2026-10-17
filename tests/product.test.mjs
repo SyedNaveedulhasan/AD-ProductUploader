@@ -1,0 +1,10 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {parseCSV,csvProducts,productSchema,blankProduct} from '../lib/product.ts';
+test('CSV preserves commas, escaped quotes and multiline descriptions',()=>{assert.deepEqual(parseCSV('name,description\r\n"Shirt, blue","A ""great""\nshirt"'),[['name','description'],['Shirt, blue','A "great"\nshirt']]);});
+test('CSV rejects unclosed quotes',()=>assert.throws(()=>parseCSV('name\n"oops')));
+test('Import validates prices and stock',()=>{assert.throws(()=>csvProducts('name,price,stock\nShirt,-2,3'));assert.throws(()=>csvProducts('name,price,stock\nShirt,20,1.5'));});
+test('Schema rejects invalid sale prices, missing variations and unsafe URLs',()=>{assert.equal(productSchema.safeParse({...blankProduct,name:'Shirt',price:20,sale_price:30}).success,false);assert.equal(productSchema.safeParse({...blankProduct,name:'Shirt',type:'variable'}).success,false);assert.equal(productSchema.safeParse({...blankProduct,name:'Shirt',image:'javascript:alert(1)'}).success,false);});
+test('Valid physical and digital products are supported',()=>{assert.equal(productSchema.safeParse({...blankProduct,name:'Shirt',price:20,stock:5}).success,true);assert.equal(productSchema.safeParse({...blankProduct,name:'Guide',virtual:true,downloadable:true,download_url:'https://example.com/file.pdf'}).success,true);});
+test('Combination variations match each attribute with an option',()=>{const v={attribute:'Size | Color',option:'M | Blue',sku:'M-BLUE',price:20,stock:3};assert.equal(productSchema.safeParse({...blankProduct,name:'Tee',type:'variable',variations:[v]}).success,true);assert.equal(productSchema.safeParse({...blankProduct,name:'Tee',type:'variable',variations:[{...v,option:'M'}]}).success,false);assert.equal(productSchema.safeParse({...blankProduct,name:'Tee',type:'variable',variations:[v,v]}).success,false);});
+test('An empty sale price stays empty, not a free sale',()=>{assert.equal(productSchema.parse({...blankProduct,name:'Shirt',price:20}).sale_price,'');});
